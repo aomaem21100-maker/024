@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import date
+import os
 
 import pandas as pd
 import streamlit as st
@@ -20,7 +21,7 @@ from neo4j_service import (
 
 
 # =========================================================
-# Streamlit Page Config
+# PAGE CONFIG
 # =========================================================
 
 st.set_page_config(
@@ -32,83 +33,175 @@ st.set_page_config(
 
 
 # =========================================================
-# Custom CSS
+# PATH
+# =========================================================
+
+IMAGE_PATH = os.path.join(
+    "assets",
+    "graphbook.jpg"
+)
+
+
+# =========================================================
+# CUSTOM CSS
 # =========================================================
 
 st.markdown(
     """
     <style>
 
-      .block-container {
-        padding-top: 1.3rem;
-        padding-bottom: 2rem;
-      }
+    /* ------------------------------
+       Main page
+    ------------------------------ */
 
-      /* =========================
-         Hero
-         ========================= */
+    .block-container {
+        padding-top: 1.5rem;
+        padding-bottom: 3rem;
+        max-width: 1400px;
+    }
 
-      .hero {
-        padding: 1.4rem 1.6rem;
+
+    /* ------------------------------
+       Sidebar
+    ------------------------------ */
+
+    section[data-testid="stSidebar"] {
+        border-right: 1px solid rgba(128,128,128,.15);
+    }
+
+    section[data-testid="stSidebar"] h2 {
+        font-size: 1.5rem;
+    }
+
+
+    /* ------------------------------
+       Hero
+    ------------------------------ */
+
+    .hero {
+        padding: 1.8rem 2rem;
         border-radius: 22px;
-        background: linear-gradient(
-          120deg,
-          #111827 0%,
-          #1f2937 55%,
-          #0f766e 100%
-        );
+        background:
+            linear-gradient(
+                135deg,
+                #111827 0%,
+                #1f2937 55%,
+                #0f766e 100%
+            );
         color: white;
-        margin-bottom: 1rem;
-      }
+        margin-bottom: 1.5rem;
+        box-shadow: 0 10px 30px rgba(0,0,0,.12);
+    }
 
-      .hero h1 {
+    .hero h1 {
         margin: 0;
-        font-size: 2.15rem;
-      }
+        font-size: 2.3rem;
+        font-weight: 750;
+        letter-spacing: -0.5px;
+    }
 
-      .hero p {
+    .hero p {
+        margin: .5rem 0 0 0;
         opacity: .88;
-        margin: .35rem 0 0 0;
-      }
+        font-size: 1.05rem;
+    }
 
-      /* =========================
-         Header Image
-         ========================= */
 
-      .header-image {
+    /* ------------------------------
+       Header Image
+    ------------------------------ */
+
+    .header-image {
         width: 100%;
-        height: 280px;
+        height: 300px;
         object-fit: cover;
         border-radius: 22px;
-        margin-bottom: 1rem;
-        display: block;
-      }
+        margin-bottom: 1.3rem;
+        box-shadow: 0 10px 30px rgba(0,0,0,.12);
+    }
 
-      /* =========================
-         Book Card
-         ========================= */
 
-      .book-card {
-        padding: 1rem 1.1rem;
-        border: 1px solid rgba(128,128,128,.25);
-        border-radius: 16px;
-        margin-bottom: .75rem;
-      }
+    /* ------------------------------
+       Section
+    ------------------------------ */
 
-      .score-pill {
+    .section-title {
+        font-size: 1.35rem;
+        font-weight: 700;
+        margin-bottom: .8rem;
+    }
+
+
+    /* ------------------------------
+       Book Card
+    ------------------------------ */
+
+    .book-card {
+        padding: 1.2rem 1.3rem;
+        border: 1px solid rgba(128,128,128,.20);
+        border-radius: 18px;
+        margin-bottom: .9rem;
+        background: rgba(255,255,255,.02);
+        box-shadow: 0 4px 14px rgba(0,0,0,.04);
+    }
+
+    .book-card:hover {
+        border-color: rgba(15,118,110,.45);
+    }
+
+    .book-card h3 {
+        margin-top: .55rem;
+        margin-bottom: .3rem;
+    }
+
+
+    /* ------------------------------
+       Score
+    ------------------------------ */
+
+    .score-pill {
         display: inline-block;
-        padding: .2rem .55rem;
+        padding: .25rem .65rem;
         border-radius: 999px;
         background: #0f766e;
         color: white;
         font-size: .8rem;
         font-weight: 700;
-      }
+    }
 
-      .muted {
-        opacity: .72;
+
+    /* ------------------------------
+       Muted text
+    ------------------------------ */
+
+    .muted {
+        opacity: .68;
         font-size: .9rem;
-      }
+    }
+
+
+    /* ------------------------------
+       Info Box
+    ------------------------------ */
+
+    .info-card {
+        padding: 1rem 1.2rem;
+        border-radius: 16px;
+        border: 1px solid rgba(128,128,128,.18);
+        margin-bottom: 1rem;
+    }
+
+
+    /* ------------------------------
+       Footer
+    ------------------------------ */
+
+    .footer {
+        text-align: center;
+        opacity: .55;
+        padding-top: 2rem;
+        font-size: .85rem;
+    }
 
     </style>
     """,
@@ -117,18 +210,13 @@ st.markdown(
 
 
 # =========================================================
-# Image Path
-# =========================================================
-
-IMAGE_PATH = r"C:\Users\Admin\Downloads\da8cff6f-dac1-47ae-8787-f69afc1769e3.jpg"
-
-
-# =========================================================
-# Neo4j Connection
+# NEO4J CONNECTION
 # =========================================================
 
 def require_connection() -> None:
+
     try:
+
         if not ping():
             raise RuntimeError(
                 "Neo4j did not return a healthy response"
@@ -136,7 +224,13 @@ def require_connection() -> None:
 
     except Exception as exc:
 
-        st.error("ยังเชื่อมต่อ Neo4j Aura ไม่สำเร็จ")
+        st.error(
+            "❌ ยังเชื่อมต่อ Neo4j Aura ไม่สำเร็จ"
+        )
+
+        st.markdown(
+            "ตรวจสอบค่า Neo4j ใน Streamlit Secrets"
+        )
 
         st.code(
             '[neo4j]\n'
@@ -148,19 +242,21 @@ def require_connection() -> None:
         )
 
         st.caption(
-            "ให้นำค่าด้านบนไปใส่ใน Streamlit Secrets "
-            "และห้าม commit password ลง GitHub"
+            "⚠️ ห้าม commit password ลง GitHub"
         )
 
         st.exception(exc)
+
         st.stop()
 
 
 # =========================================================
-# Student Selector
+# STUDENT SELECTOR
 # =========================================================
 
-def student_selector(key: str = "student") -> str:
+def student_selector(
+    key: str = "student"
+) -> str:
 
     students = get_students()
 
@@ -168,7 +264,8 @@ def student_selector(key: str = "student") -> str:
 
         st.info(
             "ยังไม่มีข้อมูลนักศึกษา "
-            "กรุณาไปหน้า Admin / Setup แล้วสร้างข้อมูลตัวอย่าง"
+            "กรุณาไปหน้า Admin / Setup "
+            "แล้วสร้างข้อมูลตัวอย่าง"
         )
 
         st.stop()
@@ -180,7 +277,7 @@ def student_selector(key: str = "student") -> str:
     }
 
     chosen = st.selectbox(
-        "เลือกผู้ใช้",
+        "👤 เลือกผู้ใช้",
         list(labels),
         key=key
     )
@@ -189,7 +286,7 @@ def student_selector(key: str = "student") -> str:
 
 
 # =========================================================
-# Recommendation Reason
+# RECOMMENDATION REASON
 # =========================================================
 
 def explain_reason(row: dict) -> str:
@@ -204,7 +301,11 @@ def explain_reason(row: dict) -> str:
 
         parts.append(
             f"เพื่อน {row['friend_count']} คนเคยยืม"
-            + (f" ({friends})" if friends else "")
+            + (
+                f" ({friends})"
+                if friends
+                else ""
+            )
         )
 
     if row.get("interest_matches", 0):
@@ -214,20 +315,27 @@ def explain_reason(row: dict) -> str:
         )
 
         parts.append(
-            f"ตรงกับความสนใจ {row['interest_matches']} หมวด"
-            + (f" ({cats})" if cats else "")
+            f"ตรงกับความสนใจ "
+            f"{row['interest_matches']} หมวด"
+            + (
+                f" ({cats})"
+                if cats
+                else ""
+            )
         )
 
     if row.get("popularity", 0):
 
         parts.append(
-            f"ถูกยืมแล้ว {row['popularity']} ครั้ง"
+            f"ถูกยืมแล้ว "
+            f"{row['popularity']} ครั้ง"
         )
 
     if row.get("avg_rating", 0):
 
         parts.append(
-            f"คะแนนเฉลี่ย {row['avg_rating']:.2f}/5"
+            f"คะแนนเฉลี่ย "
+            f"{row['avg_rating']:.2f}/5"
         )
 
     return (
@@ -237,24 +345,30 @@ def explain_reason(row: dict) -> str:
 
 
 # =========================================================
-# Check Neo4j
+# CHECK CONNECTION
 # =========================================================
 
 require_connection()
 
 
 # =========================================================
-# Sidebar
+# SIDEBAR
 # =========================================================
 
 with st.sidebar:
 
-    st.markdown("## 📚 GraphBook")
+    st.markdown(
+        "## 📚 GraphBook"
+    )
 
-    st.caption("Neo4j Aura + Streamlit")
+    st.caption(
+        "Graph Database Recommendation System"
+    )
+
+    st.divider()
 
     page = st.radio(
-        "เมนู",
+        "เมนูหลัก",
         [
             "Dashboard",
             "Recommendations",
@@ -267,46 +381,58 @@ with st.sidebar:
 
     st.divider()
 
+    st.markdown(
+        """
+        **Technology**
+
+        🟢 Neo4j Aura  
+        🔵 Streamlit  
+        🐍 Python  
+        📊 Graph Database
+        """
+    )
+
+    st.divider()
+
     st.caption(
         "Bachelor-level Graph Database Project"
     )
 
 
 # =========================================================
-# Header Image
+# HEADER IMAGE
 # =========================================================
 
-try:
+if os.path.exists(IMAGE_PATH):
 
     st.image(
         IMAGE_PATH,
         use_container_width=True,
     )
 
-except Exception:
+else:
 
     st.warning(
-        "ไม่พบรูปภาพ กรุณาตรวจสอบ path:\n"
-        + IMAGE_PATH
+        f"⚠️ ไม่พบรูปภาพ: {IMAGE_PATH}"
     )
 
 
 # =========================================================
-# Hero
+# HERO
 # =========================================================
 
 st.markdown(
     """
     <div class="hero">
 
-      <h1>
-        📚 GraphBook Recommendation System
-      </h1>
+        <h1>
+            📚 GraphBook Recommendation System
+        </h1>
 
-      <p>
-        ระบบแนะนำหนังสือด้วย Graph Database
-        ที่อธิบายเหตุผลของคำแนะนำได้
-      </p>
+        <p>
+            ระบบแนะนำหนังสือด้วย Graph Database
+            พร้อมแสดงเหตุผลของคำแนะนำ
+        </p>
 
     </div>
     """,
@@ -315,48 +441,60 @@ st.markdown(
 
 
 # =========================================================
-# Dashboard
+# DASHBOARD
 # =========================================================
 
 if page == "Dashboard":
 
-    st.subheader("ภาพรวมระบบ")
+    st.markdown(
+        '<div class="section-title">📊 ภาพรวมระบบ</div>',
+        unsafe_allow_html=True,
+    )
 
     m = get_dashboard_metrics()
 
     c1, c2, c3, c4 = st.columns(4)
 
     c1.metric(
-        "Students",
+        "👨‍🎓 Students",
         m.get("students", 0)
     )
 
     c2.metric(
-        "Books",
+        "📚 Books",
         m.get("books", 0)
     )
 
     c3.metric(
-        "Borrowed relationships",
+        "📖 Borrowed",
         m.get("borrows", 0)
     )
 
     c4.metric(
-        "Friend relationships",
+        "🤝 Friendships",
         m.get("friendships", 0)
     )
 
     st.divider()
 
+    st.markdown(
+        "### 👤 ข้อมูลผู้ใช้"
+    )
+
     student_id = student_selector(
         "dash_student"
     )
 
-    profile = get_profile(student_id)
+    profile = get_profile(
+        student_id
+    )
 
     if profile:
 
-        left, right = st.columns([1, 2])
+        left, right = st.columns(
+            [1, 2],
+            gap="large"
+        )
 
         with left:
 
@@ -365,29 +503,36 @@ if page == "Dashboard":
             )
 
             st.write(
-                f"**รหัส:** {profile['student_id']}"
+                f"**รหัสนักศึกษา:** "
+                f"{profile['student_id']}"
             )
 
             st.write(
-                f"**สาขา:** {profile['major']}"
+                f"**สาขา:** "
+                f"{profile['major']}"
             )
 
             st.write(
-                f"**ชั้นปี:** {profile['year']}"
+                f"**ชั้นปี:** "
+                f"{profile['year']}"
             )
 
-            st.write(
-                "**ความสนใจ:** "
-                + (
-                    ", ".join(profile["interests"])
-                    or "ยังไม่มี"
+            interests = (
+                ", ".join(
+                    profile["interests"]
                 )
+                if profile["interests"]
+                else "ยังไม่มี"
+            )
+
+            st.write(
+                f"**ความสนใจ:** {interests}"
             )
 
         with right:
 
             st.markdown(
-                "### ประวัติการยืม"
+                "### 📖 ประวัติการยืม"
             )
 
             if profile["borrowed"]:
@@ -408,12 +553,19 @@ if page == "Dashboard":
 
 
 # =========================================================
-# Recommendations
+# RECOMMENDATIONS
 # =========================================================
 
 elif page == "Recommendations":
 
-    st.subheader("✨ หนังสือที่แนะนำ")
+    st.subheader(
+        "✨ หนังสือที่แนะนำ"
+    )
+
+    st.caption(
+        "ระบบวิเคราะห์ความสัมพันธ์ใน Graph "
+        "เพื่อสร้างคำแนะนำหนังสือ"
+    )
 
     student_id = student_selector(
         "rec_student"
@@ -462,24 +614,26 @@ elif page == "Recommendations":
             f"""
             <div class="book-card">
 
-              <span class="score-pill">
-                #{i} · score {row['score']:.2f}
-              </span>
+                <span class="score-pill">
+                    #{i} · Score {row['score']:.2f}
+                </span>
 
-              <h3 style="margin:.55rem 0 .2rem 0">
-                {row['title']}
-              </h3>
+                <h3>
+                    {row['title']}
+                </h3>
 
-              <div class="muted">
-                {row['book_id']} ·
-                {authors} ·
-                {categories}
-              </div>
+                <div class="muted">
+                    📘 {row['book_id']}
+                    &nbsp; • &nbsp;
+                    ✍️ {authors}
+                    &nbsp; • &nbsp;
+                    🏷️ {categories}
+                </div>
 
-              <p>
-                <b>เหตุผล:</b>
-                {explain_reason(row)}
-              </p>
+                <p>
+                    <b>💡 เหตุผล:</b>
+                    {explain_reason(row)}
+                </p>
 
             </div>
             """,
@@ -488,27 +642,40 @@ elif page == "Recommendations":
 
 
 # =========================================================
-# Book Search
+# BOOK SEARCH
 # =========================================================
 
 elif page == "Book Search":
 
-    st.subheader("🔎 ค้นหาหนังสือ")
+    st.subheader(
+        "🔎 ค้นหาหนังสือ"
+    )
 
-    c1, c2 = st.columns([2, 1])
+    st.caption(
+        "ค้นหาหนังสือจากชื่อ ผู้แต่ง หรือหมวดหมู่"
+    )
+
+    c1, c2 = st.columns(
+        [2, 1],
+        gap="medium"
+    )
 
     keyword = c1.text_input(
         "ชื่อหนังสือหรือผู้แต่ง",
         placeholder="เช่น Python, Neo4j, Kanya"
     )
 
-    categories = [""] + list_categories()
+    categories = [
+        ""
+    ] + list_categories()
 
     category = c2.selectbox(
         "หมวด",
         categories,
         format_func=lambda x:
-            "ทุกหมวด" if x == "" else x
+            "ทุกหมวด"
+            if x == ""
+            else x
     )
 
     rows = search_books(
@@ -516,8 +683,10 @@ elif page == "Book Search":
         category
     )
 
+    st.divider()
+
     st.write(
-        f"พบ {len(rows)} รายการ"
+        f"📚 พบ **{len(rows)}** รายการ"
     )
 
     if rows:
@@ -536,13 +705,18 @@ elif page == "Book Search":
 
 
 # =========================================================
-# Borrow / Rate
+# BORROW / RATE
 # =========================================================
 
 elif page == "Borrow / Rate":
 
     st.subheader(
         "📝 บันทึกการยืมและให้คะแนน"
+    )
+
+    st.caption(
+        "สร้างความสัมพันธ์ BORROWED "
+        "ระหว่าง Student และ Book"
     )
 
     student_id = student_selector(
@@ -554,7 +728,7 @@ elif page == "Borrow / Rate":
     if not books:
 
         st.info(
-            "ยังไม่มีหนังสือ"
+            "ยังไม่มีหนังสือในระบบ"
         )
 
         st.stop()
@@ -566,17 +740,17 @@ elif page == "Borrow / Rate":
     }
 
     selected = st.selectbox(
-        "หนังสือ",
+        "📚 หนังสือ",
         list(book_labels)
     )
 
     borrow_date = st.date_input(
-        "วันที่ยืม",
+        "📅 วันที่ยืม",
         value=date.today()
     )
 
     use_rating = st.checkbox(
-        "ให้คะแนนพร้อมกัน"
+        "⭐ ให้คะแนนหนังสือพร้อมกัน"
     )
 
     rating = st.slider(
@@ -588,8 +762,10 @@ elif page == "Borrow / Rate":
         disabled=not use_rating,
     )
 
+    st.divider()
+
     if st.button(
-        "บันทึก",
+        "💾 บันทึกข้อมูล",
         type="primary",
         use_container_width=True,
     ):
@@ -598,21 +774,31 @@ elif page == "Borrow / Rate":
             student_id,
             book_labels[selected],
             borrow_date.isoformat(),
-            rating if use_rating else None,
+            rating
+            if use_rating
+            else None,
         )
 
         st.success(
-            "บันทึกความสัมพันธ์ BORROWED แล้ว"
+            "✅ บันทึกความสัมพันธ์ "
+            "BORROWED แล้ว"
         )
 
 
 # =========================================================
-# Graph Explorer
+# GRAPH EXPLORER
 # =========================================================
 
 elif page == "Graph Explorer":
 
-    st.subheader("🕸️ Graph Explorer")
+    st.subheader(
+        "🕸️ Graph Explorer"
+    )
+
+    st.caption(
+        "แสดงความสัมพันธ์ระหว่าง Student, "
+        "Book, Category และ Author"
+    )
 
     student_id = student_selector(
         "graph_student"
@@ -632,17 +818,24 @@ elif page == "Graph Explorer":
 
         dot = [
             "digraph G {",
+
             'rankdir="LR";',
-            'node [shape=box, '
-            'style="rounded,filled", '
-            'fillcolor="#f8fafc"];'
+
+            '''
+            node [
+                shape=box,
+                style="rounded,filled",
+                fillcolor="#f8fafc",
+                fontname="Arial"
+            ];
+            '''
         ]
 
         seen_nodes = set()
 
         for r in rows:
 
-            for nid, label, name in [
+            nodes = [
 
                 (
                     r["source_id"],
@@ -656,7 +849,9 @@ elif page == "Graph Explorer":
                     r["target_name"]
                 ),
 
-            ]:
+            ]
+
+            for nid, label, name in nodes:
 
                 if nid not in seen_nodes:
 
@@ -680,7 +875,9 @@ elif page == "Graph Explorer":
                 f'[label="{r["relationship"]}"];'
             )
 
-        dot.append("}")
+        dot.append(
+            "}"
+        )
 
         st.graphviz_chart(
             "\n".join(dot),
@@ -688,7 +885,7 @@ elif page == "Graph Explorer":
         )
 
         with st.expander(
-            "ดูข้อมูล edge ที่ใช้วาดกราฟ"
+            "🔍 ดูข้อมูล Edge ที่ใช้วาดกราฟ"
         ):
 
             st.dataframe(
@@ -699,7 +896,7 @@ elif page == "Graph Explorer":
 
 
 # =========================================================
-# Admin / Setup
+# ADMIN / SETUP
 # =========================================================
 
 elif page == "Admin / Setup":
@@ -715,18 +912,34 @@ elif page == "Admin / Setup":
 
     st.markdown(
         """
-        **Graph schema**
+        ### Graph Schema
 
-        - `(:Student)-[:FRIEND_OF]-(:Student)`
-        - `(:Student)-[:BORROWED {borrow_date, rating}]->(:Book)`
-        - `(:Student)-[:INTERESTED_IN]->(:Category)`
-        - `(:Book)-[:IN_CATEGORY]->(:Category)`
-        - `(:Author)-[:WROTE]->(:Book)`
+        **Student**
+
+        `(:Student)-[:FRIEND_OF]-(:Student)`
+
+        **Borrow**
+
+        `(:Student)-[:BORROWED {borrow_date, rating}]->(:Book)`
+
+        **Interest**
+
+        `(:Student)-[:INTERESTED_IN]->(:Category)`
+
+        **Book Category**
+
+        `(:Book)-[:IN_CATEGORY]->(:Category)`
+
+        **Author**
+
+        `(:Author)-[:WROTE]->(:Book)`
         """
     )
 
+    st.divider()
+
     if st.button(
-        "สร้าง Constraint + Demo Data",
+        "🚀 สร้าง Constraint + Demo Data",
         type="primary",
         use_container_width=True,
     ):
@@ -738,7 +951,25 @@ elif page == "Admin / Setup":
             seed_demo_data()
 
         st.success(
-            "สร้างข้อมูลตัวอย่างเรียบร้อยแล้ว"
+            "✅ สร้างข้อมูลตัวอย่างเรียบร้อยแล้ว"
         )
 
         st.rerun()
+
+
+# =========================================================
+# FOOTER
+# =========================================================
+
+st.markdown(
+    """
+    <div class="footer">
+        📚 GraphBook Recommendation System
+        <br>
+        Neo4j Aura + Streamlit
+        <br>
+        Bachelor-level Graph Database Project
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
