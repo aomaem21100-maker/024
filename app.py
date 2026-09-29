@@ -1,3 +1,4 @@
+
 from __future__ import annotations
 
 from datetime import date
@@ -25,7 +26,7 @@ from neo4j_service import (
 # =========================================================
 
 st.set_page_config(
-    page_title="GraphBook Recommender",
+    page_title="GraphBook Recommendation System",
     page_icon="📚",
     layout="wide",
     initial_sidebar_state="expanded",
@@ -116,6 +117,7 @@ st.markdown(
         margin: .5rem 0 0 0;
         opacity: .88;
         font-size: 1rem;
+        line-height: 1.7;
     }
 
 
@@ -199,23 +201,6 @@ st.markdown(
         font-size: .82rem;
     }
 
-
-    /* ==============================
-       Sidebar Bottom Image
-    ============================== */
-
-    .sidebar-image {
-        margin-top: 1rem;
-        text-align: left;
-    }
-
-    .sidebar-image img {
-        width: 90px;
-        height: 90px;
-        object-fit: cover;
-        border-radius: 14px;
-    }
-
     </style>
     """,
     unsafe_allow_html=True,
@@ -242,6 +227,10 @@ def require_connection() -> None:
             "❌ ยังเชื่อมต่อ Neo4j Aura ไม่สำเร็จ"
         )
 
+        st.markdown(
+            "ตรวจสอบค่า Neo4j ใน Streamlit Secrets"
+        )
+
         st.code(
             '[neo4j]\n'
             'uri = "neo4j+s://YOUR_INSTANCE.databases.neo4j.io"\n'
@@ -252,8 +241,7 @@ def require_connection() -> None:
         )
 
         st.caption(
-            "⚠️ ให้นำค่าด้านบนไปใส่ใน Streamlit Secrets "
-            "และห้าม commit password ลง GitHub"
+            "⚠️ ห้าม commit password ลง GitHub"
         )
 
         st.exception(exc)
@@ -409,14 +397,11 @@ with st.sidebar:
         """
     )
 
-    # =============================================
-    # IMAGE - LEFT BOTTOM
-    # =============================================
+    st.divider()
 
-    st.markdown(
-        '<div style="margin-top:20px;"></div>',
-        unsafe_allow_html=True
-    )
+    # =====================================================
+    # SMALL IMAGE
+    # =====================================================
 
     if os.path.exists(IMAGE_PATH):
 
@@ -428,7 +413,7 @@ with st.sidebar:
     else:
 
         st.caption(
-            "ไม่พบ assets/graphbook.jpg"
+            "⚠️ ไม่พบรูป assets/graphbook.jpg"
         )
 
     st.caption(
@@ -450,7 +435,8 @@ st.markdown(
 
         <p>
             ระบบแนะนำหนังสือด้วย Graph Database
-            พร้อมแสดงเหตุผลของคำแนะนำ
+            เพื่อวิเคราะห์ความสัมพันธ์ระหว่างผู้ใช้และหนังสือ
+            และนำเสนอหนังสือที่เหมาะสมกับผู้ใช้
         </p>
 
     </div>
@@ -801,8 +787,7 @@ elif page == "Borrow / Rate":
         )
 
         st.success(
-            "✅ บันทึกความสัมพันธ์ "
-            "BORROWED แล้ว"
+            "✅ บันทึกความสัมพันธ์ BORROWED แล้ว"
         )
 
 
@@ -839,7 +824,6 @@ elif page == "Graph Explorer":
 
         dot = [
             "digraph G {",
-
             'rankdir="LR";',
 
             """
@@ -896,9 +880,7 @@ elif page == "Graph Explorer":
                 f'[label="{r["relationship"]}"];'
             )
 
-        dot.append(
-            "}"
-        )
+        dot.append("}")
 
         st.graphviz_chart(
             "\n".join(dot),
@@ -988,10 +970,8 @@ st.markdown(
 
         📚 GraphBook Recommendation System
         <br>
-
         Neo4j Aura + Streamlit
         <br>
-
         Bachelor-level Graph Database Project
 
     </div>
