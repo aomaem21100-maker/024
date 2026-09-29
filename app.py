@@ -1,4 +1,3 @@
-
 from __future__ import annotations
 
 from datetime import date
@@ -99,7 +98,7 @@ st.markdown(
                 #0f766e 100%
             );
 
-        color: white;
+        color: #ffffff !important;
         margin-bottom: 1.5rem;
 
         box-shadow:
@@ -107,17 +106,20 @@ st.markdown(
     }
 
     .hero h1 {
-        margin: 0;
-        font-size: 2.25rem;
-        font-weight: 750;
+        margin: 0 !important;
+        padding: 0 !important;
+        color: #ffffff !important;
+        font-size: 2.25rem !important;
+        font-weight: 750 !important;
         letter-spacing: -.5px;
     }
 
     .hero p {
-        margin: .5rem 0 0 0;
-        opacity: .88;
-        font-size: 1rem;
-        line-height: 1.7;
+        margin: .5rem 0 0 0 !important;
+        padding: 0 !important;
+        color: rgba(255, 255, 255, 0.9) !important;
+        font-size: 1rem !important;
+        line-height: 1.7 !important;
     }
 
 
@@ -356,18 +358,12 @@ require_connection()
 
 with st.sidebar:
 
-    st.markdown(
-        '<div class="sidebar-title">'
-        '📚 GraphBook'
-        '</div>',
-        unsafe_allow_html=True
+    st.html(
+        '<div class="sidebar-title">📚 GraphBook</div>'
     )
 
-    st.markdown(
-        '<div class="sidebar-subtitle">'
-        'Graph Database Recommendation System'
-        '</div>',
-        unsafe_allow_html=True
+    st.html(
+        '<div class="sidebar-subtitle">Graph Database Recommendation System</div>'
     )
 
     st.divider()
@@ -425,7 +421,7 @@ with st.sidebar:
 # HERO
 # =========================================================
 
-st.markdown(
+st.html(
     """
     <div class="hero">
 
@@ -440,8 +436,7 @@ st.markdown(
         </p>
 
     </div>
-    """,
-    unsafe_allow_html=True,
+    """
 )
 
 
@@ -451,11 +446,8 @@ st.markdown(
 
 if page == "Dashboard":
 
-    st.markdown(
-        '<div class="section-title">'
-        '📊 ภาพรวมระบบ'
-        '</div>',
-        unsafe_allow_html=True
+    st.html(
+        '<div class="section-title">📊 ภาพรวมระบบ</div>'
     )
 
     m = get_dashboard_metrics()
@@ -617,7 +609,7 @@ elif page == "Recommendations":
             row.get("categories") or []
         ) or "ไม่ระบุหมวด"
 
-        st.markdown(
+        st.html(
             f"""
             <div class="book-card">
 
@@ -643,8 +635,7 @@ elif page == "Recommendations":
                 </p>
 
             </div>
-            """,
-            unsafe_allow_html=True,
+            """
         )
 
 
@@ -964,7 +955,7 @@ elif page == "Admin / Setup":
 # FOOTER
 # =========================================================
 
-st.markdown(
+st.html(
     """
     <div class="footer">
 
@@ -975,6 +966,5 @@ st.markdown(
         Bachelor-level Graph Database Project
 
     </div>
-    """,
-    unsafe_allow_html=True,
+    """
 )
