@@ -33,7 +33,7 @@ st.set_page_config(
 
 
 # =========================================================
-# PATH
+# IMAGE PATH
 # =========================================================
 
 IMAGE_PATH = os.path.join(
@@ -50,37 +50,46 @@ st.markdown(
     """
     <style>
 
-    /* ------------------------------
-       Main page
-    ------------------------------ */
+    /* ==============================
+       Main
+    ============================== */
 
     .block-container {
-        padding-top: 1.5rem;
-        padding-bottom: 3rem;
+        padding-top: 1.4rem;
+        padding-bottom: 2rem;
         max-width: 1400px;
     }
 
 
-    /* ------------------------------
+    /* ==============================
        Sidebar
-    ------------------------------ */
+    ============================== */
 
     section[data-testid="stSidebar"] {
         border-right: 1px solid rgba(128,128,128,.15);
     }
 
-    section[data-testid="stSidebar"] h2 {
+    .sidebar-title {
         font-size: 1.5rem;
+        font-weight: 750;
+        margin-bottom: .1rem;
+    }
+
+    .sidebar-subtitle {
+        font-size: .82rem;
+        opacity: .65;
+        margin-bottom: 1rem;
     }
 
 
-    /* ------------------------------
+    /* ==============================
        Hero
-    ------------------------------ */
+    ============================== */
 
     .hero {
-        padding: 1.8rem 2rem;
+        padding: 1.7rem 2rem;
         border-radius: 22px;
+
         background:
             linear-gradient(
                 135deg,
@@ -88,42 +97,31 @@ st.markdown(
                 #1f2937 55%,
                 #0f766e 100%
             );
+
         color: white;
         margin-bottom: 1.5rem;
-        box-shadow: 0 10px 30px rgba(0,0,0,.12);
+
+        box-shadow:
+            0 10px 30px rgba(0,0,0,.12);
     }
 
     .hero h1 {
         margin: 0;
-        font-size: 2.3rem;
+        font-size: 2.25rem;
         font-weight: 750;
-        letter-spacing: -0.5px;
+        letter-spacing: -.5px;
     }
 
     .hero p {
         margin: .5rem 0 0 0;
         opacity: .88;
-        font-size: 1.05rem;
+        font-size: 1rem;
     }
 
 
-    /* ------------------------------
-       Header Image
-    ------------------------------ */
-
-    .header-image {
-        width: 100%;
-        height: 300px;
-        object-fit: cover;
-        border-radius: 22px;
-        margin-bottom: 1.3rem;
-        box-shadow: 0 10px 30px rgba(0,0,0,.12);
-    }
-
-
-    /* ------------------------------
+    /* ==============================
        Section
-    ------------------------------ */
+    ============================== */
 
     .section-title {
         font-size: 1.35rem;
@@ -132,21 +130,25 @@ st.markdown(
     }
 
 
-    /* ------------------------------
+    /* ==============================
        Book Card
-    ------------------------------ */
+    ============================== */
 
     .book-card {
         padding: 1.2rem 1.3rem;
-        border: 1px solid rgba(128,128,128,.20);
-        border-radius: 18px;
-        margin-bottom: .9rem;
-        background: rgba(255,255,255,.02);
-        box-shadow: 0 4px 14px rgba(0,0,0,.04);
-    }
 
-    .book-card:hover {
-        border-color: rgba(15,118,110,.45);
+        border: 1px solid
+            rgba(128,128,128,.20);
+
+        border-radius: 18px;
+
+        margin-bottom: .9rem;
+
+        background:
+            rgba(255,255,255,.02);
+
+        box-shadow:
+            0 4px 14px rgba(0,0,0,.04);
     }
 
     .book-card h3 {
@@ -155,24 +157,30 @@ st.markdown(
     }
 
 
-    /* ------------------------------
+    /* ==============================
        Score
-    ------------------------------ */
+    ============================== */
 
     .score-pill {
         display: inline-block;
+
         padding: .25rem .65rem;
+
         border-radius: 999px;
+
         background: #0f766e;
+
         color: white;
+
         font-size: .8rem;
+
         font-weight: 700;
     }
 
 
-    /* ------------------------------
-       Muted text
-    ------------------------------ */
+    /* ==============================
+       Muted
+    ============================== */
 
     .muted {
         opacity: .68;
@@ -180,27 +188,32 @@ st.markdown(
     }
 
 
-    /* ------------------------------
-       Info Box
-    ------------------------------ */
-
-    .info-card {
-        padding: 1rem 1.2rem;
-        border-radius: 16px;
-        border: 1px solid rgba(128,128,128,.18);
-        margin-bottom: 1rem;
-    }
-
-
-    /* ------------------------------
+    /* ==============================
        Footer
-    ------------------------------ */
+    ============================== */
 
     .footer {
         text-align: center;
-        opacity: .55;
+        opacity: .5;
         padding-top: 2rem;
-        font-size: .85rem;
+        font-size: .82rem;
+    }
+
+
+    /* ==============================
+       Sidebar Bottom Image
+    ============================== */
+
+    .sidebar-image {
+        margin-top: 1rem;
+        text-align: left;
+    }
+
+    .sidebar-image img {
+        width: 90px;
+        height: 90px;
+        object-fit: cover;
+        border-radius: 14px;
     }
 
     </style>
@@ -218,6 +231,7 @@ def require_connection() -> None:
     try:
 
         if not ping():
+
             raise RuntimeError(
                 "Neo4j did not return a healthy response"
             )
@@ -226,10 +240,6 @@ def require_connection() -> None:
 
         st.error(
             "❌ ยังเชื่อมต่อ Neo4j Aura ไม่สำเร็จ"
-        )
-
-        st.markdown(
-            "ตรวจสอบค่า Neo4j ใน Streamlit Secrets"
         )
 
         st.code(
@@ -242,7 +252,8 @@ def require_connection() -> None:
         )
 
         st.caption(
-            "⚠️ ห้าม commit password ลง GitHub"
+            "⚠️ ให้นำค่าด้านบนไปใส่ใน Streamlit Secrets "
+            "และห้าม commit password ลง GitHub"
         )
 
         st.exception(exc)
@@ -345,7 +356,7 @@ def explain_reason(row: dict) -> str:
 
 
 # =========================================================
-# CHECK CONNECTION
+# CHECK NEO4J
 # =========================================================
 
 require_connection()
@@ -358,11 +369,17 @@ require_connection()
 with st.sidebar:
 
     st.markdown(
-        "## 📚 GraphBook"
+        '<div class="sidebar-title">'
+        '📚 GraphBook'
+        '</div>',
+        unsafe_allow_html=True
     )
 
-    st.caption(
-        "Graph Database Recommendation System"
+    st.markdown(
+        '<div class="sidebar-subtitle">'
+        'Graph Database Recommendation System'
+        '</div>',
+        unsafe_allow_html=True
     )
 
     st.divider()
@@ -392,28 +409,30 @@ with st.sidebar:
         """
     )
 
-    st.divider()
+    # =============================================
+    # IMAGE - LEFT BOTTOM
+    # =============================================
+
+    st.markdown(
+        '<div style="margin-top:20px;"></div>',
+        unsafe_allow_html=True
+    )
+
+    if os.path.exists(IMAGE_PATH):
+
+        st.image(
+            IMAGE_PATH,
+            width=90
+        )
+
+    else:
+
+        st.caption(
+            "ไม่พบ assets/graphbook.jpg"
+        )
 
     st.caption(
         "Bachelor-level Graph Database Project"
-    )
-
-
-# =========================================================
-# HEADER IMAGE
-# =========================================================
-
-if os.path.exists(IMAGE_PATH):
-
-    st.image(
-        IMAGE_PATH,
-        use_container_width=True,
-    )
-
-else:
-
-    st.warning(
-        f"⚠️ ไม่พบรูปภาพ: {IMAGE_PATH}"
     )
 
 
@@ -447,8 +466,10 @@ st.markdown(
 if page == "Dashboard":
 
     st.markdown(
-        '<div class="section-title">📊 ภาพรวมระบบ</div>',
-        unsafe_allow_html=True,
+        '<div class="section-title">'
+        '📊 ภาพรวมระบบ'
+        '</div>',
+        unsafe_allow_html=True
     )
 
     m = get_dashboard_metrics()
@@ -821,14 +842,14 @@ elif page == "Graph Explorer":
 
             'rankdir="LR";',
 
-            '''
+            """
             node [
                 shape=box,
                 style="rounded,filled",
                 fillcolor="#f8fafc",
                 fontname="Arial"
             ];
-            '''
+            """
         ]
 
         seen_nodes = set()
@@ -964,11 +985,15 @@ elif page == "Admin / Setup":
 st.markdown(
     """
     <div class="footer">
+
         📚 GraphBook Recommendation System
         <br>
+
         Neo4j Aura + Streamlit
         <br>
+
         Bachelor-level Graph Database Project
+
     </div>
     """,
     unsafe_allow_html=True,
